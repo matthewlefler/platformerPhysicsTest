@@ -1,14 +1,18 @@
+using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace UnixSocketsIPC;
+
+// 2 bytes for size of message  |  2 bytes for user inputs  |    |    |    |    |   
+//          65536                          65536
 
 struct message
 {
 
 }
 
-class Messenger
+public class Messenger
 {
     private Socket socket;
     private NetworkStream networkStream;
@@ -20,14 +24,22 @@ class Messenger
     {
         this.path = path;
 
-        endpoint = new UnixDomainSocketEndPoint(path);
-        socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+        try
+        {
+            endpoint = new UnixDomainSocketEndPoint(path);
+            socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+        }
+        catch
+        {
+            Debug.WriteLine("!! Failed to create socket and endpoint !!");
+            throw;
+        }
 
-         try
+        try
         {
             socket.Connect(endpoint);
             networkStream = new NetworkStream(socket, false);
-         }
+        }
         catch
         {
             socket.Dispose();
@@ -36,11 +48,26 @@ class Messenger
         }
     }
 
-    public void send()
+    public void write()
     {
         if(networkStream.CanWrite)
         {
-            //networkStream.BeginWrite()
+            byte[] message = new byte[2];
+            message[0] = 0;
+            message[1] = 0;
+
+            networkStream.Write(message);
+        }
+    }
+
+    public void read()
+    {
+        if(networkStream.CanRead)
+        {
+            byte[] message = new byte[2];    
+            networkStream.Read(message);
+
+            Debug.WriteLine(message[0]);
         }
     }
 

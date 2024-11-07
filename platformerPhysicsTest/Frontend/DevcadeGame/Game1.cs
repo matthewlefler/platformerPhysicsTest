@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Devcade;
+using UnixSocketsIPC;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace Platformer
@@ -10,6 +11,8 @@ namespace Platformer
 	{
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
+
+        private Messenger messenger;
 		
 		/// <summary>
 		/// Stores the window dimensions in a rectangle object for easy use
@@ -51,6 +54,8 @@ namespace Platformer
 			// TODO: Add your initialization logic here
 
 			windowSize = GraphicsDevice.Viewport.Bounds;
+
+            messenger = new Messenger("C:\\Users\\Lefler\\Documents\\Git Repos\\PlatformerPhysicsTest\\sockets");
 			
 			base.Initialize();
 		}
@@ -87,6 +92,10 @@ namespace Platformer
 
 			// TODO: Add your update logic here
 
+            messenger.write();
+            messenger.read();
+
+
 			base.Update(gameTime);
 		}
 
@@ -96,7 +105,7 @@ namespace Platformer
 		/// <param name="gameTime">This is the gameTime object you can use to get the time since last frame.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+			GraphicsDevice.Clear(Color.Black);
 			
 			// Batches all the draw calls for this frame, and then performs them all at once
 			_spriteBatch.Begin();
